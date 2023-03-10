@@ -1,13 +1,22 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { Document, SchemaOptions } from 'mongoose';
 
+// 스키마 옵션
 const options: SchemaOptions = {
     timestamps: true,
 };
 
+// @Schema() 데코레이터을 사용해서 스키마 정의
 @Schema(options)
 export class Cat extends Document {
+    // dto에서 Cat 클래스를 상속받아 사용하기 위해 @ApiProperty 데코레이터 추가
+    @ApiProperty({
+        example: 'russian.blue@gmail.com',
+        description: 'email',
+        required: true,
+    })
     @Prop({
         required: true,
         unique: true,
@@ -16,6 +25,11 @@ export class Cat extends Document {
     @IsNotEmpty()
     email: string;
 
+    @ApiProperty({
+        example: 'ruble',
+        description: 'name',
+        required: true,
+    })
     @Prop({
         required: true,
     })
@@ -23,6 +37,11 @@ export class Cat extends Document {
     @IsNotEmpty()
     name: string;
 
+    @ApiProperty({
+        example: '12345',
+        description: 'password',
+        required: true,
+    })
     @Prop({
         required: true,
     })
@@ -37,6 +56,7 @@ export class Cat extends Document {
     readonly readOnlyData: { id: string; email: string; name: string };
 }
 
+// Cat 클래스를 스키마로 만들어준다.
 export const CatSchema = SchemaFactory.createForClass(Cat);
 
 // virtual field

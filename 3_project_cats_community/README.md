@@ -72,6 +72,7 @@ bootstrap();
 
 ```sh
 MONGODB_URI=
+NODE_ENV=
 PORT=
 ```
 
@@ -95,3 +96,37 @@ $ npm i -D @types/bcrypt
 -   계층간 데이터 교환을 위한 객체
 -   DB에서 데이터를 얻어 Service나 Controller 등으로 보낼 때 사용하는 객체
 -   Request 와 Response용 DTO는 View를 위한 클래스이다.
+-   클라이언트에서 Request Body에 데이터를 실어 보냈을 때, DTO로 만들어서 validation과 타입 검사를 진행.
+-   이후 Controller에 DTO 전달, Service 및 DB에 데이터를 전달할 때도 DTO 사용.
+
+<br>
+<br>
+
+# API Swagger
+
+```sh
+$ npm install --save @nestjs/swagger
+```
+
+```ts
+// main.ts
+import { NestFactory } from '@nestjs/core';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+    const app = await NestFactory.create(AppModule);
+
+    const config = new DocumentBuilder()
+        .setTitle('Cats example')
+        .setDescription('The cats API description')
+        .setVersion('1.0')
+        .addTag('cats')
+        .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+
+    await app.listen(3000);
+}
+bootstrap();
+```
