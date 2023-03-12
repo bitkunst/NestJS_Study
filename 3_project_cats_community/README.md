@@ -224,3 +224,24 @@ $ npm install --save-dev @types/passport-jwt
 
 <br>
 <br>
+
+# Swagger API 보안 설정
+
+```sh
+$ npm install express-basic-auth
+```
+
+```ts
+import * as expressBasicAuth from 'express-basic-auth';
+
+// Swagger API 보안 설정
+app.use(
+    ['/api-docs'],
+    expressBasicAuth({
+        users: {
+            [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD,
+        },
+        challenge: true,
+    }),
+);
+```
