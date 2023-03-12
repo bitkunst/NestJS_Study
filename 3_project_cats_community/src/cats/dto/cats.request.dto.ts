@@ -1,4 +1,4 @@
-import { OmitType } from '@nestjs/swagger';
+import { OmitType, PickType } from '@nestjs/swagger';
 import { Cat } from '../schema/cats.schema';
 
 /*
@@ -7,4 +7,4 @@ import { Cat } from '../schema/cats.schema';
     * 상속을 통한 재사용성 증가 가능 
 */
 // OmitType을 사용해 Cat 클래스에서 필요없는 타입만 빼고 가져올 수 있다.
-export class CatRequestDto extends OmitType(Cat, ['imgUrl'] as const) {}
+export class CatRequestDto extends PickType(Cat, ['email', 'name', 'password'] as const) {}

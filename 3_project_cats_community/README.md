@@ -130,3 +130,52 @@ async function bootstrap() {
 }
 bootstrap();
 ```
+
+<br>
+<br>
+
+# Repository 패턴
+
+-   지금까지는 Service에서 비즈니스 로직을 구현할 때 데이터베이스에 직접적으로 접근하는 방식으로 구현하였다.
+-   하지만, 데이터베이스에 접근할 때 더 복잡해지는 로직이 발생한다면?
+-   비즈니스 로직 자체에 집중하기 어려울 뿐만 아니라, 로직 자체의 테스트도 어려워지며 중복되는 코드의 증가, 가독성 저하 등의 문제가 발생한다.
+-   Repository 패턴은 Service 와 Database 사이에 중개자 역할을 하는 Repository가 존재하는 패턴이다.
+-   Client -> ... -> Service1, Service2, Service3 -> Repository -> Database
+-   Repository 패턴을 사용해 데이터베이스와 직접적으로 연결하는 로직들을 아예 분리시켜 주면 다른 모듈에서 접근할 때는 Repository에만 접근하면 된다.
+-   그렇게 되면, 각각의 모듈에서는 비즈니스 로직에만 더 집중할 수 있고 모듈 간의 책임 분리도 확실해진다.
+-   또한 Repository 패턴의 핵심은 서비스 레이어에서 데이터의 출처와 관계없이 동일한 방식으로 데이터에 접근할 수 있도록 하는 것이다.
+-   Repository가 Service와 DB 사이에서 쿼리를 다듬어주면, 서비스 레이어에서 어떤 데이터베이스를 사용하든지 동일한 방식으로 접근해서 데이터를 핸들링 할 수 있게 된다. (데이터베이스 캡슐화? 라고 생각할 수 있다.)
+-   Repository는 데이터베이스 중앙통제실
+
+<br>
+
+```ts
+import { HttpException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CatRequestDto } from './dto/cats.request.dto';
+import { Cat } from './schema/cats.schema';
+
+// Repository 패턴
+// Repository는 의존성 주입이 가능한 클래스
+@Injectable()
+export class CatsRepository {
+    constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
+
+    async existsByEmail(email: string): Promise<{ _id: any } | null> {
+        // class-validator를 사용했기 때문에 에러가 발생한다면 mongoose에서 에러 처리를 해주기는 한다.
+        // 에러 처리를 직접적으로 해줄 필요는 없지만 필요하다면 try-catch를 사용해서 해주면 된다.
+        try {
+            const result = await this.catModel.exists({ email });
+            console.log('result', result);
+            return result;
+        } catch (err) {
+            throw new HttpException('DB error', 400);
+        }
+    }
+
+    async create(cat: CatRequestDto): Promise<Cat> {
+        return await this.catModel.create(cat);
+    }
+}
+```
