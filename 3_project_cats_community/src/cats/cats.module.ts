@@ -1,14 +1,18 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
+//* forwardRef : 순환 모듈 참조 문제 해결을 위한 방법
 import { MongooseModule } from '@nestjs/mongoose';
 import { CatsController } from './cats.controller';
 import { Cat, CatSchema } from './schema/cats.schema';
 import { CatsService } from './cats.service';
 import { CatsRepository } from './cats.repository';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
     // CatsService에서 의존성 주입을 통해 Schema를 사용하기 위해서는 CatsModule에서 imports를 해줘야만 한다.
-    imports: [MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }])], // Schema 등록
+    // MongooseModule.forFeature() -> Schema 등록
+    imports: [MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]), forwardRef(() => AuthModule)],
     controllers: [CatsController],
     providers: [CatsService, CatsRepository], // Repository를 사용하기 위해서 providers에 등록
+    exports: [CatsRepository],
 })
 export class CatsModule {}

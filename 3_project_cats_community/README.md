@@ -179,3 +179,48 @@ export class CatsRepository {
     }
 }
 ```
+
+<br>
+<br>
+
+# 로그인
+
+## How
+
+-   세션 & 쿠키 사용
+-   JWT 활용
+-   토큰 활용
+
+## JWT
+
+JSON Web Tokens; JSON 포맷을 사용해서 사용자에 대한 정보를 저장하는 Web Token이라고 할 수 있다.
+
+-   Header : base64 인코딩, 토큰의 타입과 알고리즘
+-   Payload : base64 인코딩 데이터 (key-value)
+-   Signature : Header/Payload를 조합하고 비밀키로 서명한 후, base64 인코딩
+-   Header.Payload.Signature
+
+<br>
+<br>
+
+# Authentication (feat. Passport)
+
+```sh
+$ npm install --save @nestjs/passport passport
+
+$ npm install --save @nestjs/jwt passport-jwt
+$ npm install --save-dev @types/passport-jwt
+```
+
+## 실행 순서
+
+1. 클라이언트 API Request
+2. JWT Guard
+3. JWT Strategy
+
+-   Passport에서 제공하는 AuthGuard를 주입 받게 되면 JwtStrategy의 validate 함수가 실행된다.
+-   validate 함수가 return 한 값이 request.user 객체 안에 들어가게 된다.
+-   참고) request 객체에 유저 정보를 저장할 때는 보안상의 이유로 password 필드를 제외하고 저장하는 것이 좋다.
+
+<br>
+<br>
