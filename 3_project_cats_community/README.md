@@ -245,3 +245,61 @@ app.use(
     }),
 );
 ```
+
+<br>
+<br>
+
+# Multer
+
+```sh
+$ npm i -D @types/multer
+```
+
+<br>
+
+-   단일 파일을 업로드하려면 FileInterceptor() 인터셉터를 라우트 핸들러에 연결하고,
+-   @UploadedFile() 데코레이터를 사용하여 request에서 file을 추출하면 된다.
+
+```ts
+@Post('upload')
+// @UseInterceptors(FileInterceptor('file')) // 단일 파일 업로드
+@UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats'))) // 파일 배열 업로드
+uploadFile(@UploadedFile() file: Express.Multer.File) {
+  console.log(file);
+}
+```
+
+-   FileInterceptor()는 두 개의 인수를 받는다.
+-   fieldName : 파일이 있는 HTML 양식에서 필드 이름을 제공하는 문자열 (프론트엔드에서 보내주는 키값)
+-   options : MulterOptions 타입의 선택적 객체. 이것은 multer 생성자에서 사용하는 것과 동일한 객체이다.
+
+<br>
+
+-   CatsModule에서 MulterModule을 import 해준다.
+
+```ts
+MulterModule.register({
+    dest: './upload',
+});
+```
+
+-   업로드된 파일을 확인하기 위해서는 dist/ 디렉토리 참조
+-   dist/ 는 src/ 가 Typescript에서 Javascript로 컴파일된 것
+-   Node.js는 컴파일된 Javascript를 실제로 실행하는 것 (만들 때는 Typescript로 만들고 실행시킬 때는 Javascript로 실행)
+
+<br>
+
+-   업로드된 파일이 있는 폴더의 경로를 데이터베이스에 저장
+-   서버에 있는 static 파일들을 제공하기 위해 main.ts에서 미들웨어 추가
+
+```ts
+// INestApplication 안에는 useStaticAssets 메소드 존재 X
+// app이 express application 이라는 것을 명시해줘야 한다.
+const app = await NestFactory.create<NestExpressApplication>(AppModule); // generic으로 추가
+
+// http://localhost:4000/media/cats/blockchain.jpg
+app.useStaticAssets(path.join(__dirname, './common', 'uploads'), {
+    prefix: '/media',
+});
+// prefix 옵션이 없었다면 http://localhost:4000/cats/blockchain.jpg
+```

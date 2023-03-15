@@ -4,11 +4,18 @@ import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import * as expressBasicAuth from 'express-basic-auth';
+import * as path from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
     app.useGlobalPipes(new ValidationPipe()); // class-validator 등록
     app.useGlobalFilters(new HttpExceptionFilter());
+
+    // static 파일 제공
+    app.useStaticAssets(path.join(__dirname, './common', 'uploads'), {
+        prefix: '/media',
+    });
 
     // Swagger API 보안 설정
     app.use(
