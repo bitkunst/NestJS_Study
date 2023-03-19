@@ -44,14 +44,15 @@ export class CatsService {
 
     async uploadImg(cat: Cat, files: Express.Multer.File[]) {
         const fileName = `cats/${files[0].filename}`;
-        console.log(fileName);
+        // console.log('fileName', fileName);
         const newCat = await this.catsRepository.findByIdAndUpdateImg(cat.id, fileName);
-        console.log(newCat);
+        // console.log('newCat', newCat);
         return newCat;
     }
 
     async getAllCat() {
         const allCat = await this.catsRepository.findAll();
+        // return allCat;
         const readOnlyCats = allCat.map((cat) => cat.readOnlyData);
         return readOnlyCats;
     }

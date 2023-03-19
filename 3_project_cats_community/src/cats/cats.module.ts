@@ -7,12 +7,16 @@ import { CatsService } from './services/cats.service';
 import { CatsRepository } from './cats.repository';
 import { AuthModule } from 'src/auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { Comment, CommentSchema } from 'src/comments/schema/comments.schema';
 
 @Module({
     // CatsService에서 의존성 주입을 통해 Schema를 사용하기 위해서는 CatsModule에서 imports를 해줘야만 한다.
     // MongooseModule.forFeature() -> Schema 등록
     imports: [
-        MongooseModule.forFeature([{ name: Cat.name, schema: CatSchema }]),
+        MongooseModule.forFeature([
+            { name: Cat.name, schema: CatSchema },
+            { name: Comment.name, schema: CommentSchema },
+        ]),
         forwardRef(() => AuthModule),
         MulterModule.register({
             dest: './upload',
