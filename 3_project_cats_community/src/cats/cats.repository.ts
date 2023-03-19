@@ -42,4 +42,8 @@ export class CatsRepository {
         const newCat = await cat.save();
         return newCat.readOnlyData;
     }
+
+    async findAll() {
+        return await this.catModel.find();
+    }
 }
